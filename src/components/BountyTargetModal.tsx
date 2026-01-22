@@ -210,7 +210,7 @@ export function BountyTargetModal({ isOpen, onClose, onSave, editingTarget }: Bo
               type="button" 
               variant="outline" 
               onClick={onClose}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
             >
               Cancel
             </Button>

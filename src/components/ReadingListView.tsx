@@ -132,8 +132,8 @@ export function ReadingListView() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const priorityValue = articleData.priority === 'High' ? 3 : 
-                           articleData.priority === 'Medium' ? 2 : 1;
+      const priorityValue = articleData.priority === 'High' ? 3 :
+        articleData.priority === 'Medium' ? 2 : 1;
 
       const { data, error } = await supabase
         .from('reading_list')
@@ -188,22 +188,22 @@ export function ReadingListView() {
     // Status filter
     if (filter === 'read' && !item.is_read) return false;
     if (filter === 'unread' && item.is_read) return false;
-    
+
     // Category filter
     if (filters.category !== 'all' && item.category !== filters.category) return false;
-    
+
     // Search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       const matchesTitle = item.title.toLowerCase().includes(searchLower);
       const matchesDescription = item.description.toLowerCase().includes(searchLower);
       const matchesCategory = item.category.toLowerCase().includes(searchLower);
-      
+
       if (!matchesTitle && !matchesDescription && !matchesCategory) {
         return false;
       }
     }
-    
+
     return true;
   });
 
@@ -225,7 +225,7 @@ export function ReadingListView() {
           <h1 className="text-3xl font-bold text-white">Reading List</h1>
           <p className="text-gray-400 mt-1">{unreadCount} unread articles</p>
         </div>
-        <Button 
+        <Button
           onClick={() => setShowModal(true)}
           className="bg-blue-600 hover:bg-blue-700"
         >
@@ -239,21 +239,21 @@ export function ReadingListView() {
         <Button
           variant={filter === 'all' ? 'default' : 'outline'}
           onClick={() => setFilter('all')}
-          className={filter === 'all' ? 'bg-blue-600' : 'border-gray-600 text-gray-300'}
+          className={filter === 'all' ? 'bg-blue-600 text-white' : 'border-gray-500 text-white bg-gray-700 hover:bg-gray-600'}
         >
           All ({readingList.length})
         </Button>
         <Button
           variant={filter === 'unread' ? 'default' : 'outline'}
           onClick={() => setFilter('unread')}
-          className={filter === 'unread' ? 'bg-blue-600' : 'border-gray-600 text-gray-300'}
+          className={filter === 'unread' ? 'bg-yellow-600 text-white' : 'border-gray-500 text-white bg-gray-700 hover:bg-gray-600'}
         >
           Unread ({unreadCount})
         </Button>
         <Button
           variant={filter === 'read' ? 'default' : 'outline'}
           onClick={() => setFilter('read')}
-          className={filter === 'read' ? 'bg-blue-600' : 'border-gray-600 text-gray-300'}
+          className={filter === 'read' ? 'bg-green-600 text-white' : 'border-gray-500 text-white bg-gray-700 hover:bg-gray-600'}
         >
           Read ({readingList.length - unreadCount})
         </Button>
@@ -277,14 +277,14 @@ export function ReadingListView() {
               <Input
                 placeholder="Search title, description..."
                 value={filters.search}
-                onChange={(e) => setFilters({...filters, search: e.target.value})}
+                onChange={(e) => setFilters({ ...filters, search: e.target.value })}
                 className="bg-gray-700 border-gray-600 text-white"
               />
             </div>
-            
+
             <div>
               <div className="text-sm text-gray-400 mb-2">Category</div>
-              <Select value={filters.category} onValueChange={(value) => setFilters({...filters, category: value})}>
+              <Select value={filters.category} onValueChange={(value) => setFilters({ ...filters, category: value })}>
                 <SelectTrigger className="bg-gray-700 border-gray-600">
                   <SelectValue placeholder="All Categories" />
                 </SelectTrigger>
@@ -297,7 +297,7 @@ export function ReadingListView() {
               </Select>
             </div>
           </div>
-          
+
           {(filters.search || filters.category !== 'all') && (
             <div className="mt-3 flex items-center justify-between">
               <span className="text-sm text-gray-400">
@@ -307,7 +307,7 @@ export function ReadingListView() {
                 size="sm"
                 variant="outline"
                 onClick={() => setFilters({ category: 'all', tag: 'all', search: '' })}
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
               >
                 Clear Filters
               </Button>
@@ -355,7 +355,7 @@ export function ReadingListView() {
                     size="sm"
                     variant="outline"
                     onClick={() => toggleRead(item.id)}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
                   >
                     {item.is_read ? 'Mark Unread' : 'Mark Read'}
                   </Button>
@@ -363,7 +363,7 @@ export function ReadingListView() {
                     size="sm"
                     variant="outline"
                     onClick={() => window.open(item.url, '_blank')}
-                    className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                    className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
                   >
                     <ExternalLink className="h-4 w-4" />
                   </Button>

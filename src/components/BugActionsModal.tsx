@@ -13,7 +13,7 @@ import { Edit, Trash2, Archive, RotateCcw } from 'lucide-react';
 
 interface Program {
   id: string;
-  name: string;
+  target_name: string;
   company: string;
 }
 
@@ -85,7 +85,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
     try {
       const { data, error } = await supabase
         .from('programs')
-        .select('id, name, company')
+        .select('id, target_name, company')
         .eq('is_active', true);
 
       if (error) throw error;
@@ -102,7 +102,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
   const handleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bug) return;
-    
+
     setLoading(true);
     try {
       const { error } = await supabase
@@ -137,7 +137,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
 
   const handleDelete = async () => {
     if (!bug) return;
-    
+
     setLoading(true);
     try {
       const { error } = await supabase
@@ -168,12 +168,12 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
 
   const handleArchive = async () => {
     if (!bug) return;
-    
+
     setLoading(true);
     try {
       const { error } = await supabase
         .from('bugs')
-        .update({ 
+        .update({
           status: 'Resolved',
           updated_at: new Date().toISOString(),
         })
@@ -201,12 +201,12 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
 
   const handleUnarchive = async () => {
     if (!bug) return;
-    
+
     setLoading(true);
     try {
       const { error } = await supabase
         .from('bugs')
-        .update({ 
+        .update({
           status: 'Submitted',
           updated_at: new Date().toISOString(),
         })
@@ -244,8 +244,8 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="border-gray-600">Cancel</AlertDialogCancel>
-              <AlertDialogAction 
+              <AlertDialogCancel className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600">Cancel</AlertDialogCancel>
+              <AlertDialogAction
                 onClick={handleDelete}
                 disabled={loading}
                 className="bg-red-600 hover:bg-red-700"
@@ -267,8 +267,8 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="border-gray-600">Cancel</AlertDialogCancel>
-              <AlertDialogAction 
+              <AlertDialogCancel className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600">Cancel</AlertDialogCancel>
+              <AlertDialogAction
                 onClick={handleArchive}
                 disabled={loading}
                 className="bg-yellow-600 hover:bg-yellow-700"
@@ -290,8 +290,8 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel className="border-gray-600">Cancel</AlertDialogCancel>
-              <AlertDialogAction 
+              <AlertDialogCancel className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600">Cancel</AlertDialogCancel>
+              <AlertDialogAction
                 onClick={handleUnarchive}
                 disabled={loading}
                 className="bg-blue-600 hover:bg-blue-700"
@@ -313,14 +313,14 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="program">Program</Label>
-                  <Select value={formData.program_id} onValueChange={(value) => setFormData({...formData, program_id: value})}>
+                  <Select value={formData.program_id} onValueChange={(value) => setFormData({ ...formData, program_id: value })}>
                     <SelectTrigger className="bg-gray-700 border-gray-600">
                       <SelectValue placeholder="Select a program" />
                     </SelectTrigger>
                     <SelectContent className="bg-gray-700 border-gray-600">
                       {programs.map((program) => (
                         <SelectItem key={program.id} value={program.id}>
-                          {program.company} - {program.name}
+                          {program.company || program.target_name} - {program.target_name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -329,7 +329,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
 
                 <div>
                   <Label htmlFor="severity">Severity</Label>
-                  <Select value={formData.severity} onValueChange={(value: any) => setFormData({...formData, severity: value})}>
+                  <Select value={formData.severity} onValueChange={(value: any) => setFormData({ ...formData, severity: value })}>
                     <SelectTrigger className="bg-gray-700 border-gray-600">
                       <SelectValue />
                     </SelectTrigger>
@@ -347,7 +347,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="status">Status</Label>
-                  <Select value={formData.status} onValueChange={(value: any) => setFormData({...formData, status: value})}>
+                  <Select value={formData.status} onValueChange={(value: any) => setFormData({ ...formData, status: value })}>
                     <SelectTrigger className="bg-gray-700 border-gray-600">
                       <SelectValue />
                     </SelectTrigger>
@@ -369,7 +369,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
                   <Input
                     id="vulnerability_type"
                     value={formData.vulnerability_type}
-                    onChange={(e) => setFormData({...formData, vulnerability_type: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, vulnerability_type: e.target.value })}
                     className="bg-gray-700 border-gray-600"
                     placeholder="e.g., XSS, SQL Injection, CSRF"
                   />
@@ -381,7 +381,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
                 <Input
                   id="title"
                   value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   className="bg-gray-700 border-gray-600"
                   required
                 />
@@ -392,7 +392,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
                 <Textarea
                   id="description"
                   value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="bg-gray-700 border-gray-600"
                   rows={3}
                 />
@@ -403,7 +403,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
                 <Textarea
                   id="poc_steps"
                   value={formData.poc_steps}
-                  onChange={(e) => setFormData({...formData, poc_steps: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, poc_steps: e.target.value })}
                   className="bg-gray-700 border-gray-600"
                   rows={4}
                   placeholder="Step-by-step reproduction steps..."
@@ -415,7 +415,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
                 <Textarea
                   id="impact_description"
                   value={formData.impact_description}
-                  onChange={(e) => setFormData({...formData, impact_description: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, impact_description: e.target.value })}
                   className="bg-gray-700 border-gray-600"
                   rows={3}
                 />
@@ -426,7 +426,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
                 <Textarea
                   id="remediation_suggestion"
                   value={formData.remediation_suggestion}
-                  onChange={(e) => setFormData({...formData, remediation_suggestion: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, remediation_suggestion: e.target.value })}
                   className="bg-gray-700 border-gray-600"
                   rows={3}
                 />
@@ -440,7 +440,7 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
                     type="number"
                     step="0.01"
                     value={formData.bounty_amount}
-                    onChange={(e) => setFormData({...formData, bounty_amount: parseFloat(e.target.value) || 0})}
+                    onChange={(e) => setFormData({ ...formData, bounty_amount: parseFloat(e.target.value) || 0 })}
                     className="bg-gray-700 border-gray-600"
                   />
                 </div>
@@ -451,14 +451,14 @@ export function BugActionsModal({ bug, isOpen, onClose, onSave, mode }: BugActio
                     id="submission_date"
                     type="date"
                     value={formData.submission_date}
-                    onChange={(e) => setFormData({...formData, submission_date: e.target.value})}
+                    onChange={(e) => setFormData({ ...formData, submission_date: e.target.value })}
                     className="bg-gray-700 border-gray-600"
                   />
                 </div>
               </div>
 
               <div className="flex justify-end space-x-2">
-                <Button type="button" variant="outline" onClick={onClose} className="border-gray-600">
+                <Button type="button" variant="outline" onClick={onClose} className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600">
                   Cancel
                 </Button>
                 <Button type="submit" disabled={loading} className="bg-cyan-600 hover:bg-cyan-700">

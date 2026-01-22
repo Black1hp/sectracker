@@ -4,13 +4,15 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 import { database } from '@/lib/database';
 
-const SUPABASE_URL = "https://shxncrzawwosgupunuue.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNoeG5jcnphd3dvc2d1cHVudXVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg0MjE5NDUsImV4cCI6MjA2Mzk5Nzk0NX0.YmrNMdYFVMwcm1GgLOQWkMu0VKLDNeF9ZntRFCOFP7s";
-
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+  throw new Error('Supabase URL and Key must be defined in .env');
+}
 // Check if we're in offline mode
 const isOfflineMode = import.meta.env.VITE_SUPABASE_ANON_KEY === 'offline_mode';
 
 // Use local database client in offline mode, otherwise use Supabase
-export const supabase = isOfflineMode 
+export const supabase = isOfflineMode
   ? database as any
   : createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);

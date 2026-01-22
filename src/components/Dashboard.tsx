@@ -4,14 +4,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { 
-  Bug, 
-  Target, 
-  Calendar, 
-  TrendingUp, 
-  Shield, 
-  BookOpen, 
-  Link, 
+import {
+  Bug,
+  Target,
+  Calendar,
+  TrendingUp,
+  Shield,
+  BookOpen,
+  Link,
   StickyNote,
   Plus,
   DollarSign,
@@ -30,6 +30,7 @@ interface DashboardStats {
   resolvedBugs: number;
   totalBounties: number;
   platforms: number;
+  programs: number;
   checklists: number;
   tips: number;
   links: number;
@@ -53,6 +54,7 @@ export function Dashboard() {
     resolvedBugs: 0,
     totalBounties: 0,
     platforms: 0,
+    programs: 0,
     checklists: 0,
     tips: 0,
     links: 0,
@@ -90,6 +92,7 @@ export function Dashboard() {
       // Fetch other counts
       const [
         { count: platformsCount },
+        { count: programsCount },
         { count: checklistsCount },
         { count: tipsCount },
         { count: linksCount },
@@ -97,6 +100,7 @@ export function Dashboard() {
         { count: readingCount }
       ] = await Promise.all([
         supabase.from('platforms').select('*', { count: 'exact', head: true }),
+        supabase.from('programs').select('*', { count: 'exact', head: true }),
         supabase.from('security_checklists').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
         supabase.from('security_tips').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
         supabase.from('useful_links').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
@@ -114,6 +118,7 @@ export function Dashboard() {
         resolvedBugs,
         totalBounties,
         platforms: platformsCount || 0,
+        programs: programsCount || 0,
         checklists: checklistsCount || 0,
         tips: tipsCount || 0,
         links: linksCount || 0,
@@ -235,10 +240,10 @@ export function Dashboard() {
                 Active Bounty Targets
               </CardTitle>
               <Button
-                onClick={() => navigateTo('bounty-targets')}
+                onClick={() => navigateTo('earnings-goals')}
                 variant="outline"
                 size="sm"
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-cyan-500 text-cyan-400 bg-gray-800 hover:bg-gray-700 hover:text-cyan-300"
               >
                 View All
               </Button>
@@ -256,7 +261,7 @@ export function Dashboard() {
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-white font-medium">{target.title}</h4>
                     <Badge variant={isOverdue ? "destructive" : isNearDeadline ? "secondary" : "default"}>
-                      {isOverdue 
+                      {isOverdue
                         ? `${Math.abs(daysLeft)} days overdue`
                         : `${daysLeft} days left`
                       }
@@ -285,123 +290,106 @@ export function Dashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Button
-              onClick={() => navigateTo('my-bugs')}
+              onClick={() => navigateTo('bug-reports')}
               variant="outline"
-              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-600 hover:bg-gray-700"
+              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
             >
               <Bug className="h-6 w-6 text-red-400" />
-              <span className="text-sm">Report Bug</span>
+              <span className="text-sm">Bug Reports</span>
             </Button>
 
             <Button
-              onClick={() => navigateTo('bounty-targets')}
+              onClick={() => navigateTo('my-targets')}
               variant="outline"
-              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-600 hover:bg-gray-700"
+              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
             >
               <Target className="h-6 w-6 text-cyan-400" />
-              <span className="text-sm">Set Target</span>
+              <span className="text-sm">My Targets</span>
+            </Button>
+
+            <Button
+              onClick={() => navigateTo('analytics')}
+              variant="outline"
+              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
+            >
+              <TrendingUp className="h-6 w-6 text-emerald-400" />
+              <span className="text-sm">Analytics</span>
             </Button>
 
             <Button
               onClick={() => navigateTo('checklists')}
               variant="outline"
-              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-600 hover:bg-gray-700"
+              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
             >
-              <Shield className="h-6 w-6 text-blue-400" />
-              <span className="text-sm">Security Check</span>
+              <Shield className="h-6 w-6 text-green-400" />
+              <span className="text-sm">Checklists</span>
             </Button>
 
             <Button
-              onClick={() => navigateTo('platforms')}
+              onClick={() => navigateTo('knowledge-base')}
               variant="outline"
-              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-600 hover:bg-gray-700"
+              className="h-20 flex flex-col items-center justify-center space-y-2 border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
             >
               <Globe className="h-6 w-6 text-purple-400" />
-              <span className="text-sm">Platforms</span>
+              <span className="text-sm">Knowledge</span>
             </Button>
           </div>
         </CardContent>
       </Card>
 
       {/* Resource Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('platforms')}>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('my-targets')}>
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center gap-2">
-              <Users className="h-5 w-5 text-purple-400" />
-              Platforms
+              <Target className="h-5 w-5 text-cyan-400" />
+              My Targets
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-purple-400 mb-2">{stats.platforms}</div>
-            <p className="text-sm text-gray-400">Bug bounty platforms</p>
+            <div className="text-3xl font-bold text-cyan-400 mb-2">{stats.programs}</div>
+            <p className="text-sm text-gray-400">Hunting targets</p>
           </CardContent>
         </Card>
 
         <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('checklists')}>
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center gap-2">
-              <Shield className="h-5 w-5 text-blue-400" />
+              <Shield className="h-5 w-5 text-green-400" />
               Checklists
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-blue-400 mb-2">{stats.checklists}</div>
+            <div className="text-3xl font-bold text-green-400 mb-2">{stats.checklists}</div>
             <p className="text-sm text-gray-400">Security checklists</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('tips')}>
+        <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('knowledge-base')}>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-white flex items-center gap-2">
+              <BookOpen className="h-5 w-5 text-purple-400" />
+              Knowledge Base
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-purple-400 mb-2">{stats.tips + stats.notes + stats.links}</div>
+            <p className="text-sm text-gray-400">Notes, tips & links</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('news-feed')}>
           <CardHeader className="pb-3">
             <CardTitle className="text-white flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-orange-400" />
-              Tips
+              News Feed
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-orange-400 mb-2">{stats.tips}</div>
-            <p className="text-sm text-gray-400">Security tips</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('reading')}>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-white flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-green-400" />
-              Reading List
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-400 mb-2">{stats.readingItems}</div>
-            <p className="text-sm text-gray-400">Articles to read</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('links')}>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-white flex items-center gap-2">
-              <Link className="h-5 w-5 text-cyan-400" />
-              Useful Links
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-cyan-400 mb-2">{stats.links}</div>
-            <p className="text-sm text-gray-400">Bookmarked links</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-gray-800 border-gray-700 cursor-pointer hover:bg-gray-750 transition-colors" onClick={() => navigateTo('notes')}>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-white flex items-center gap-2">
-              <StickyNote className="h-5 w-5 text-yellow-400" />
-              Notes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-yellow-400 mb-2">{stats.notes}</div>
-            <p className="text-sm text-gray-400">Personal notes</p>
+            <div className="text-3xl font-bold text-orange-400 mb-2">{stats.readingItems}</div>
+            <p className="text-sm text-gray-400">Security news</p>
           </CardContent>
         </Card>
       </div>

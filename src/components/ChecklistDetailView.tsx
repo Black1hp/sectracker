@@ -45,7 +45,7 @@ export function ChecklistDetailView({ checklistId, onBack }: ChecklistDetailView
         <Button 
           onClick={onBack} 
           variant="outline"
-          className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+          className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-500 text-white bg-gray-700 hover:bg-gray-600"}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Checklists
@@ -103,7 +103,7 @@ export function ChecklistDetailView({ checklistId, onBack }: ChecklistDetailView
         <Button 
           onClick={onBack} 
           variant="outline"
-          className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+          className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-500 text-white bg-gray-700 hover:bg-gray-600"}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Back to Checklists

@@ -2,16 +2,14 @@
 import React from 'react';
 import { Sidebar } from '@/components/Sidebar';
 import { Dashboard } from '@/components/Dashboard';
-import { PlatformsView } from '@/components/PlatformsView';
 import { ChecklistsView } from '@/components/ChecklistsView';
-import { TipsView } from '@/components/TipsView';
-import { ReadingListView } from '@/components/ReadingListView';
-import { PersonalNotesView } from '@/components/PersonalNotesView';
-import { UsefulLinksView } from '@/components/UsefulLinksView';
 import { ProfileView } from '@/components/ProfileView';
 import { RSSView } from '@/components/RSSView';
 import { BugReportsView } from '@/components/BugReportsView';
 import { BountyTargetsView } from '@/components/BountyTargetsView';
+import { AnalyticsView } from '@/components/AnalyticsView';
+import { HuntingTargetsView } from '@/components/HuntingTargetsView';
+import { KnowledgeBaseView } from '@/components/KnowledgeBaseView';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AuthWrapper } from '@/components/AuthWrapper';
 
@@ -31,28 +29,32 @@ const Index = () => {
 
   const renderView = () => {
     switch (activeView) {
+      // Hunting
       case 'dashboard':
         return <Dashboard />;
-      case 'platforms':
-        return <PlatformsView />;
-      case 'my-bugs':
+      case 'my-targets':
+        return <HuntingTargetsView />;
+      case 'bug-reports':
         return <BugReportsView />;
-      case 'bounty-targets':
-        return <BountyTargetsView />;
+      case 'analytics':
+        return <AnalyticsView />;
+
+      // Methodology
       case 'checklists':
         return <ChecklistsView />;
-      case 'tips':
-        return <TipsView />;
-      case 'reading':
-        return <ReadingListView />;
-      case 'rss':
+      case 'knowledge-base':
+        return <KnowledgeBaseView />;
+
+      // Resources
+      case 'news-feed':
         return <RSSView />;
-      case 'notes':
-        return <PersonalNotesView />;
-      case 'links':
-        return <UsefulLinksView />;
+      case 'earnings-goals':
+        return <BountyTargetsView />;
+
+      // Account
       case 'profile':
         return <ProfileView />;
+
       default:
         return <Dashboard />;
     }

@@ -57,7 +57,7 @@ export function RSSView() {
             onClick={refreshFeeds}
             disabled={refreshing}
             variant="outline"
-            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh

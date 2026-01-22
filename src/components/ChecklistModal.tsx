@@ -163,7 +163,7 @@ export function ChecklistModal({ isOpen, onClose, onSave }: ChecklistModalProps)
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={onClose} className="border-gray-600">
+            <Button type="button" variant="outline" onClick={onClose} className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600">
               Cancel
             </Button>
             <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700">

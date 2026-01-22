@@ -134,7 +134,7 @@ export function TipModal({ isOpen, onClose, onSave, tip, viewMode = false }: Tip
                 Save Tip
               </Button>
             )}
-            <Button variant="outline" onClick={onClose} className="border-gray-600 text-gray-300 hover:bg-gray-700">
+            <Button variant="outline" onClick={onClose} className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600">
               {viewMode ? 'Close' : 'Cancel'}
             </Button>
           </div>

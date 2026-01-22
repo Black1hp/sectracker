@@ -54,7 +54,7 @@ export function RSSArticleCard({ article, onAddToReading }: RSSArticleCardProps)
               size="sm"
               variant="outline"
               onClick={() => onAddToReading(article)}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
             >
               <BookOpen className="h-4 w-4 mr-1" />
               Add to Reading
@@ -63,7 +63,7 @@ export function RSSArticleCard({ article, onAddToReading }: RSSArticleCardProps)
               size="sm"
               variant="outline"
               onClick={() => window.open(article.link, '_blank')}
-              className="border-gray-600 text-gray-300 hover:bg-gray-700"
+              className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
             >
               <ExternalLink className="h-4 w-4" />
             </Button>

@@ -18,7 +18,7 @@ interface BugReport {
   platform?: string;
   program?: string;
   severity: 'Critical' | 'High' | 'Medium' | 'Low' | 'Informational';
-  status: 'Draft' | 'Submitted' | 'Triaged' | 'Accepted' | 'Duplicate' | 'Not Applicable' | 'Resolved' | 'Bounty Awarded';
+  status: 'Draft' | 'Submitted' | 'Triaged' | 'Duplicate' | 'Informative' | 'Not Applicable' | 'Resolved';
   created_at: string;
   bounty_amount?: number;
   program_id?: string;
@@ -28,8 +28,9 @@ interface BugReport {
   impact_description?: string;
   remediation_suggestion?: string;
   submission_date?: string;
+  collaborators?: { name: string; percentage: number }[];
   programs?: {
-    name: string;
+    target_name: string;
     company: string;
     platforms?: {
       name: string;
@@ -41,7 +42,7 @@ export function BugReportsView() {
   const { theme } = useTheme();
   const isHackerTheme = theme === 'hacker';
   const { toast } = useToast();
-  
+
   const [reports, setReports] = useState<BugReport[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -70,7 +71,7 @@ export function BugReportsView() {
         .select(`
           *,
           programs (
-            name,
+            target_name,
             company,
             platforms (
               name
@@ -94,7 +95,7 @@ export function BugReportsView() {
         id: bug.id,
         title: bug.title,
         platform: bug.programs?.platforms?.name || 'Unknown',
-        program: bug.programs ? `${bug.programs.company} - ${bug.programs.name}` : 'Unknown',
+        program: bug.programs ? `${bug.programs.company || bug.programs.target_name} - ${bug.programs.target_name}` : 'Unknown',
         severity: bug.severity,
         status: bug.status,
         created_at: bug.created_at,
@@ -106,6 +107,7 @@ export function BugReportsView() {
         impact_description: bug.impact_description,
         remediation_suggestion: bug.remediation_suggestion,
         submission_date: bug.submission_date,
+        collaborators: bug.collaborators || [],
         programs: bug.programs
       })) || [];
 
@@ -122,35 +124,38 @@ export function BugReportsView() {
     }
   };
 
+  // HackerOne-style severity colors
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'Critical': return isHackerTheme ? 'bg-red-900 text-red-300' : 'bg-red-600';
-      case 'High': return isHackerTheme ? 'bg-orange-900 text-orange-300' : 'bg-orange-500';
-      case 'Medium': return isHackerTheme ? 'bg-yellow-900 text-yellow-300' : 'bg-yellow-500';
-      case 'Low': return isHackerTheme ? 'bg-green-900 text-green-300' : 'bg-green-500';
-      case 'Informational': return isHackerTheme ? 'bg-blue-900 text-blue-300' : 'bg-blue-500';
-      default: return isHackerTheme ? 'bg-gray-900 text-gray-300' : 'bg-gray-500';
+      case 'Critical': return isHackerTheme ? 'bg-red-800 text-red-200' : 'bg-red-700 text-white';
+      case 'High': return isHackerTheme ? 'bg-orange-800 text-orange-200' : 'bg-orange-600 text-white';
+      case 'Medium': return isHackerTheme ? 'bg-yellow-800 text-yellow-200' : 'bg-yellow-600 text-black';
+      case 'Low': return isHackerTheme ? 'bg-green-800 text-green-200' : 'bg-green-600 text-white';
+      case 'Informational': return isHackerTheme ? 'bg-blue-800 text-blue-200' : 'bg-blue-500 text-white';
+      default: return isHackerTheme ? 'bg-gray-800 text-gray-200' : 'bg-gray-500 text-white';
     }
   };
 
+  // HackerOne-style status colors
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'Resolved': return isHackerTheme ? 'bg-green-900 text-green-300' : 'bg-green-600';
-      case 'Accepted': return isHackerTheme ? 'bg-blue-900 text-blue-300' : 'bg-blue-600';
-      case 'Submitted': return isHackerTheme ? 'bg-yellow-900 text-yellow-300' : 'bg-yellow-600';
-      case 'Draft': return isHackerTheme ? 'bg-gray-900 text-gray-300' : 'bg-gray-600';
-      case 'Duplicate': return isHackerTheme ? 'bg-purple-900 text-purple-300' : 'bg-purple-600';
-      case 'Bounty Awarded': return isHackerTheme ? 'bg-green-900 text-green-300' : 'bg-green-600';
-      default: return isHackerTheme ? 'bg-gray-900 text-gray-300' : 'bg-gray-600';
+      case 'Resolved': return isHackerTheme ? 'bg-green-700 text-green-100' : 'bg-green-600 text-white';
+      case 'Triaged': return isHackerTheme ? 'bg-orange-700 text-orange-100' : 'bg-orange-500 text-white';
+      case 'Submitted': return isHackerTheme ? 'bg-purple-700 text-purple-100' : 'bg-purple-600 text-white';
+      case 'Draft': return isHackerTheme ? 'bg-gray-700 text-gray-200' : 'bg-gray-600 text-white';
+      case 'Duplicate': return isHackerTheme ? 'bg-amber-800 text-amber-200' : 'bg-amber-700 text-white';
+      case 'Informative': return isHackerTheme ? 'bg-slate-600 text-slate-200' : 'bg-slate-500 text-white';
+      case 'Not Applicable': return isHackerTheme ? 'bg-red-800 text-red-200' : 'bg-red-700 text-white';
+      default: return isHackerTheme ? 'bg-gray-700 text-gray-200' : 'bg-gray-600 text-white';
     }
   };
 
   const filteredReports = reports.filter(report => {
     const matchesSearch = report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         (report.program && report.program.toLowerCase().includes(searchTerm.toLowerCase()));
+      (report.program && report.program.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesProgram = !filterProgram || filterProgram === 'all' || (report.program && report.program === filterProgram);
     const matchesStatus = !filterStatus || filterStatus === 'all' || report.status === filterStatus;
-    
+
     return matchesSearch && matchesProgram && matchesStatus;
   });
 
@@ -233,7 +238,7 @@ export function BugReportsView() {
         <h1 className={`text-3xl font-bold ${isHackerTheme ? "text-green-400 font-mono" : "text-white"}`}>
           My Bug Reports
         </h1>
-        <Button 
+        <Button
           onClick={() => setIsModalOpen(true)}
           className={isHackerTheme ? "bg-green-600 hover:bg-green-700 text-black font-mono" : "bg-blue-600 hover:bg-blue-700"}
         >
@@ -275,21 +280,20 @@ export function BugReportsView() {
                 <SelectItem value="Draft">Draft</SelectItem>
                 <SelectItem value="Submitted">Submitted</SelectItem>
                 <SelectItem value="Triaged">Triaged</SelectItem>
-                <SelectItem value="Accepted">Accepted</SelectItem>
                 <SelectItem value="Resolved">Resolved</SelectItem>
                 <SelectItem value="Duplicate">Duplicate</SelectItem>
+                <SelectItem value="Informative">Informative</SelectItem>
                 <SelectItem value="Not Applicable">Not Applicable</SelectItem>
-                <SelectItem value="Bounty Awarded">Bounty Awarded</SelectItem>
               </SelectContent>
             </Select>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => {
                 setSearchTerm('');
                 setFilterProgram('');
                 setFilterStatus('');
               }}
-              className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950 font-mono" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+              className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950 font-mono" : "border-gray-500 text-white bg-gray-700 hover:bg-gray-600"}
             >
               Clear Filters
             </Button>
@@ -332,24 +336,24 @@ export function BugReportsView() {
                     {report.status}
                   </Badge>
                   <div className="flex space-x-1">
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
                       onClick={() => handleViewReport(report)}
-                      className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+                      className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950" : "border-gray-500 text-white bg-gray-700 hover:bg-gray-600"}
                     >
                       <Eye className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
                       onClick={() => handleEditReport(report)}
-                      className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+                      className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950" : "border-gray-500 text-white bg-gray-700 hover:bg-gray-600"}
                     >
                       <Edit className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
                       onClick={() => handleDeleteReport(report.id)}
                       className={isHackerTheme ? "border-red-600 text-red-400 hover:bg-red-950" : "border-red-600 text-red-400 hover:bg-red-700"}

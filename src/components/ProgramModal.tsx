@@ -24,15 +24,13 @@ interface ProgramModalProps {
 export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModalProps) {
   const [formData, setFormData] = useState({
     platform_id: '',
-    name: '',
+    target_name: '',
     company: '',
     scope: '',
     max_bounty: 0,
     min_bounty: 0,
     program_url: '',
-    logo_url: '',
     program_type: 'Public Bug Bounty Programs',
-    management_type: 'Not Managed',
   });
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
@@ -55,15 +53,13 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
 
       setFormData({
         platform_id: '',
-        name: '',
+        target_name: '',
         company: '',
         scope: '',
         max_bounty: 0,
         min_bounty: 0,
         program_url: '',
-        logo_url: '',
         program_type: 'Public Bug Bounty Programs',
-        management_type: 'Not Managed',
       });
       onSave();
       onClose();
@@ -87,7 +83,7 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="platform">Platform</Label>
-            <Select value={formData.platform_id} onValueChange={(value) => setFormData({...formData, platform_id: value})}>
+            <Select value={formData.platform_id} onValueChange={(value) => setFormData({ ...formData, platform_id: value })}>
               <SelectTrigger className="bg-gray-700 border-gray-600">
                 <SelectValue placeholder="Select a platform" />
               </SelectTrigger>
@@ -106,8 +102,8 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
               <Label htmlFor="name">Program Name</Label>
               <Input
                 id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                value={formData.target_name}
+                onChange={(e) => setFormData({ ...formData, target_name: e.target.value })}
                 className="bg-gray-700 border-gray-600"
                 required
               />
@@ -118,29 +114,19 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
               <Input
                 id="company"
                 value={formData.company}
-                onChange={(e) => setFormData({...formData, company: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                 className="bg-gray-700 border-gray-600"
                 required
               />
             </div>
           </div>
 
-          <div>
-            <Label htmlFor="logo_url">Program Logo URL</Label>
-            <Input
-              id="logo_url"
-              type="url"
-              value={formData.logo_url}
-              onChange={(e) => setFormData({...formData, logo_url: e.target.value})}
-              className="bg-gray-700 border-gray-600"
-              placeholder="https://example.com/logo.png"
-            />
-          </div>
+
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
+            <div className="col-span-2">
               <Label htmlFor="program_type">Program Type</Label>
-              <Select value={formData.program_type} onValueChange={(value) => setFormData({...formData, program_type: value})}>
+              <Select value={formData.program_type} onValueChange={(value) => setFormData({ ...formData, program_type: value })}>
                 <SelectTrigger className="bg-gray-700 border-gray-600">
                   <SelectValue />
                 </SelectTrigger>
@@ -152,18 +138,7 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="management_type">Management Type</Label>
-              <Select value={formData.management_type} onValueChange={(value) => setFormData({...formData, management_type: value})}>
-                <SelectTrigger className="bg-gray-700 border-gray-600">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-gray-700 border-gray-600">
-                  <SelectItem value="Managed">Managed</SelectItem>
-                  <SelectItem value="Not Managed">Not Managed</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+
           </div>
 
           <div>
@@ -171,7 +146,7 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
             <Textarea
               id="scope"
               value={formData.scope}
-              onChange={(e) => setFormData({...formData, scope: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, scope: e.target.value })}
               className="bg-gray-700 border-gray-600"
               rows={3}
               required
@@ -186,7 +161,7 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
                 type="number"
                 step="0.01"
                 value={formData.min_bounty}
-                onChange={(e) => setFormData({...formData, min_bounty: parseFloat(e.target.value) || 0})}
+                onChange={(e) => setFormData({ ...formData, min_bounty: parseFloat(e.target.value) || 0 })}
                 className="bg-gray-700 border-gray-600"
               />
             </div>
@@ -198,7 +173,7 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
                 type="number"
                 step="0.01"
                 value={formData.max_bounty}
-                onChange={(e) => setFormData({...formData, max_bounty: parseFloat(e.target.value) || 0})}
+                onChange={(e) => setFormData({ ...formData, max_bounty: parseFloat(e.target.value) || 0 })}
                 className="bg-gray-700 border-gray-600"
               />
             </div>
@@ -210,13 +185,13 @@ export function ProgramModal({ isOpen, onClose, platforms, onSave }: ProgramModa
               id="program_url"
               type="url"
               value={formData.program_url}
-              onChange={(e) => setFormData({...formData, program_url: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, program_url: e.target.value })}
               className="bg-gray-700 border-gray-600"
             />
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={onClose} className="border-gray-600">
+            <Button type="button" variant="outline" onClick={onClose} className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600">
               Cancel
             </Button>
             <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700">

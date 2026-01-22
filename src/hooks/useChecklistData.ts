@@ -23,61 +23,15 @@ export function useChecklistData() {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
-  // Mock data for development
-  const mockChecklists: Checklist[] = [
-    {
-      id: '1',
-      name: 'Web Application Security',
-      type: 'web',
-      description: 'Comprehensive security testing for web applications',
-      items: [
-        { id: '1', text: '**SQL Injection Testing**\n\nTest for SQL injection vulnerabilities in all input fields and parameters.', completed: true },
-        { id: '2', text: '**Cross-Site Scripting (XSS)**\n\n- Test for Reflected XSS\n- Test for Stored XSS\n- Test for DOM-based XSS', completed: true },
-        { id: '3', text: 'Test for CSRF vulnerabilities', completed: false },
-        { id: '4', text: 'Check for insecure direct object references', completed: false },
-        { id: '5', text: 'Test authentication bypass', completed: false },
-        { id: '6', text: 'Check for session management issues', completed: false },
-        { id: '7', text: 'Test for directory traversal', completed: false },
-        { id: '8', text: 'Check for command injection', completed: false }
-      ]
-    },
-    {
-      id: '2',
-      name: 'Mobile Application Security',
-      type: 'mobile',
-      description: 'Security testing checklist for mobile applications',
-      items: [
-        { id: '1', text: 'Test for insecure data storage', completed: false },
-        { id: '2', text: 'Check for weak cryptography', completed: false },
-        { id: '3', text: 'Test for insecure communication', completed: false },
-        { id: '4', text: 'Check for improper platform usage', completed: false },
-        { id: '5', text: 'Test for reverse engineering protection', completed: false }
-      ]
-    },
-    {
-      id: '3',
-      name: 'API Security Testing',
-      type: 'api',
-      description: 'Security testing checklist for APIs',
-      items: [
-        { id: '1', text: 'Test authentication mechanisms', completed: false },
-        { id: '2', text: 'Check authorization controls', completed: false },
-        { id: '3', text: 'Test rate limiting', completed: false },
-        { id: '4', text: 'Check input validation', completed: false },
-        { id: '5', text: 'Test API versioning security', completed: false }
-      ]
-    }
-  ];
-
   const fetchChecklists = async () => {
     try {
       setLoading(true);
-      
+
       // Try to get user first
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (user) {
-        // If user is authenticated, try to fetch from database
+        // If user is authenticated, fetch from database
         const { data: checklistsData, error: checklistsError } = await supabase
           .from('security_checklists')
           .select(`
@@ -97,8 +51,7 @@ export function useChecklistData() {
 
         if (checklistsError) {
           console.error('Database error:', checklistsError);
-          // Fall back to mock data
-          setChecklists(mockChecklists);
+          setChecklists([]);
         } else {
           // Transform database data to match our interface
           const dbChecklists = (checklistsData || []).map(checklist => ({
@@ -115,18 +68,16 @@ export function useChecklistData() {
                 order_index: item.order_index || 0
               }))
           }));
-          
-          // Combine database checklists with mock data
-          setChecklists([...mockChecklists, ...dbChecklists]);
+
+          setChecklists(dbChecklists);
         }
       } else {
-        // No user authenticated, use mock data
-        setChecklists(mockChecklists);
+        // No user authenticated
+        setChecklists([]);
       }
     } catch (error: any) {
       console.error('Error fetching checklists:', error);
-      // Fall back to mock data
-      setChecklists(mockChecklists);
+      setChecklists([]);
     } finally {
       setLoading(false);
     }
@@ -135,7 +86,7 @@ export function useChecklistData() {
   const createChecklist = async (checklistData: Omit<Checklist, 'id' | 'items'>) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         // In offline mode, create with mock ID
         const newChecklist: Checklist = {
@@ -173,7 +124,7 @@ export function useChecklistData() {
       };
 
       setChecklists(prev => [newChecklist, ...prev]);
-      
+
       toast({
         title: "Success",
         description: "Checklist created successfully"
@@ -189,8 +140,8 @@ export function useChecklistData() {
   };
 
   const updateChecklist = (updatedChecklist: Checklist) => {
-    setChecklists(prev => 
-      prev.map(checklist => 
+    setChecklists(prev =>
+      prev.map(checklist =>
         checklist.id === updatedChecklist.id ? {
           ...updatedChecklist,
           items: updatedChecklist.items || []
@@ -202,8 +153,20 @@ export function useChecklistData() {
   const deleteChecklist = async (checklistId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (user) {
+        // First delete all checklist items (child records)
+        const { error: itemsError } = await supabase
+          .from('checklist_items')
+          .delete()
+          .eq('checklist_id', checklistId);
+
+        if (itemsError) {
+          console.error('Error deleting checklist items:', itemsError);
+          throw itemsError;
+        }
+
+        // Then delete the checklist itself
         const { error } = await supabase
           .from('security_checklists')
           .delete()
@@ -212,6 +175,7 @@ export function useChecklistData() {
 
         if (error) {
           console.error('Error deleting checklist:', error);
+          throw error;
         }
       }
 
@@ -234,7 +198,7 @@ export function useChecklistData() {
     try {
       const checklist = checklists.find(c => c.id === checklistId);
       const item = checklist?.items.find(i => i.id === itemId);
-      
+
       if (!item) return;
 
       const newCompletedState = !item.completed;
@@ -253,15 +217,15 @@ export function useChecklistData() {
       }
 
       // Update local state
-      setChecklists(prev => 
-        prev.map(checklist => 
-          checklist.id === checklistId 
+      setChecklists(prev =>
+        prev.map(checklist =>
+          checklist.id === checklistId
             ? {
-                ...checklist,
-                items: checklist.items.map(item =>
-                  item.id === itemId ? { ...item, completed: newCompletedState } : item
-                )
-              }
+              ...checklist,
+              items: checklist.items.map(item =>
+                item.id === itemId ? { ...item, completed: newCompletedState } : item
+              )
+            }
             : checklist
         )
       );
@@ -273,9 +237,9 @@ export function useChecklistData() {
   const addChecklistItem = async (checklistId: string, text: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       let newItemId = Date.now().toString();
-      
+
       if (user) {
         const { data, error } = await supabase
           .from('checklist_items')
@@ -301,9 +265,9 @@ export function useChecklistData() {
         completed: false
       };
 
-      setChecklists(prev => 
-        prev.map(checklist => 
-          checklist.id === checklistId 
+      setChecklists(prev =>
+        prev.map(checklist =>
+          checklist.id === checklistId
             ? { ...checklist, items: [...checklist.items, newItem] }
             : checklist
         )
@@ -326,7 +290,7 @@ export function useChecklistData() {
   const updateChecklistItem = async (checklistId: string, itemId: string, text: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (user) {
         const { error } = await supabase
           .from('checklist_items')
@@ -338,15 +302,15 @@ export function useChecklistData() {
         }
       }
 
-      setChecklists(prev => 
-        prev.map(checklist => 
-          checklist.id === checklistId 
+      setChecklists(prev =>
+        prev.map(checklist =>
+          checklist.id === checklistId
             ? {
-                ...checklist,
-                items: checklist.items.map(item =>
-                  item.id === itemId ? { ...item, text } : item
-                )
-              }
+              ...checklist,
+              items: checklist.items.map(item =>
+                item.id === itemId ? { ...item, text } : item
+              )
+            }
             : checklist
         )
       );
@@ -368,7 +332,7 @@ export function useChecklistData() {
   const deleteChecklistItem = async (checklistId: string, itemId: string) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (user) {
         const { error } = await supabase
           .from('checklist_items')
@@ -380,9 +344,9 @@ export function useChecklistData() {
         }
       }
 
-      setChecklists(prev => 
-        prev.map(checklist => 
-          checklist.id === checklistId 
+      setChecklists(prev =>
+        prev.map(checklist =>
+          checklist.id === checklistId
             ? { ...checklist, items: checklist.items.filter(item => item.id !== itemId) }
             : checklist
         )

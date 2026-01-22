@@ -87,8 +87,8 @@ export function BugDetailsModal({ bug, isOpen, onClose }: BugDetailsModalProps) 
                   {bug.programs?.company && (
                     <div><span className="text-gray-400">Company:</span> <span className="text-white">{bug.programs.company}</span></div>
                   )}
-                  {bug.programs?.name && (
-                    <div><span className="text-gray-400">Program:</span> <span className="text-white">{bug.programs.name}</span></div>
+                  {bug.programs?.target_name && (
+                    <div><span className="text-gray-400">Program:</span> <span className="text-white">{bug.programs.target_name}</span></div>
                   )}
                   {bug.programs?.platforms?.name && (
                     <div><span className="text-gray-400">Platform:</span> <span className="text-white">{bug.programs.platforms.name}</span></div>
@@ -179,7 +179,7 @@ export function BugDetailsModal({ bug, isOpen, onClose }: BugDetailsModalProps) 
                 </CardContent>
               </Card>
             )}
-            
+
             {bug.submission_date && (
               <Card className="bg-gray-900 border-gray-700">
                 <CardContent className="pt-6">

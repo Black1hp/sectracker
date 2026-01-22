@@ -12,14 +12,19 @@ import { ChecklistEditModal } from './ChecklistEditModal';
 import { ConfigurationModal } from './ConfigurationModal';
 import { useChecklistData } from '@/hooks/useChecklistData';
 
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+
 export function ChecklistsView() {
   const { theme } = useTheme();
   const isHackerTheme = theme === 'hacker';
-  
+
   const [selectedChecklistId, setSelectedChecklistId] = useState<string | null>(null);
   const [showChecklistModal, setShowChecklistModal] = useState(false);
   const [showConfigModal, setShowConfigModal] = useState(false);
   const [editingChecklist, setEditingChecklist] = useState<any>(null);
+  const { toast } = useToast();
 
   const {
     checklists,
@@ -33,9 +38,9 @@ export function ChecklistsView() {
 
   if (selectedChecklistId) {
     return (
-      <ChecklistDetailView 
-        checklistId={selectedChecklistId} 
-        onBack={() => setSelectedChecklistId(null)} 
+      <ChecklistDetailView
+        checklistId={selectedChecklistId}
+        onBack={() => setSelectedChecklistId(null)}
       />
     );
   }
@@ -58,6 +63,8 @@ export function ChecklistsView() {
       default: return isHackerTheme ? 'bg-gray-900 text-gray-300' : 'bg-gray-600';
     }
   };
+
+
 
   const getProgress = (checklist: any) => {
     if (!checklist.items || checklist.items.length === 0) return 0;
@@ -82,15 +89,16 @@ export function ChecklistsView() {
           Security Checklists
         </h1>
         <div className="flex items-center space-x-2">
-          <Button 
+
+          <Button
             onClick={() => setShowConfigModal(true)}
             variant="outline"
-            className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+            className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-500 text-white bg-gray-700 hover:bg-gray-600"}
           >
             <Settings className="h-4 w-4 mr-2" />
             Configuration
           </Button>
-          <Button 
+          <Button
             onClick={() => setShowChecklistModal(true)}
             className={isHackerTheme ? "bg-green-600 hover:bg-green-700 text-black font-mono" : "bg-blue-600 hover:bg-blue-700"}
           >
@@ -104,15 +112,15 @@ export function ChecklistsView() {
         {checklists.map((checklist) => {
           const IconComponent = getTypeIcon(checklist.type);
           const progress = getProgress(checklist);
-          
+
           return (
-            <Card 
-              key={checklist.id} 
+            <Card
+              key={checklist.id}
               className={`transition-all hover:scale-105 ${isHackerTheme ? "bg-black border-green-600 hover:border-green-400" : "bg-gray-800 border-gray-700 hover:border-gray-500"}`}
             >
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle 
+                  <CardTitle
                     className={`flex items-center space-x-2 cursor-pointer ${isHackerTheme ? "text-green-400 font-mono" : "text-white"}`}
                     onClick={() => setSelectedChecklistId(checklist.id)}
                   >
@@ -149,7 +157,7 @@ export function ChecklistsView() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <div className={`flex-1 ${isHackerTheme ? "bg-green-950" : "bg-gray-700"} rounded-full h-2`}>
-                    <div 
+                    <div
                       className={`${isHackerTheme ? "bg-green-600" : "bg-blue-600"} h-2 rounded-full transition-all duration-300`}
                       style={{ width: `${progress}%` }}
                     />
@@ -172,11 +180,10 @@ export function ChecklistsView() {
                       />
                       <label
                         htmlFor={`${checklist.id}-${item.id}`}
-                        className={`flex-1 text-sm cursor-pointer ${
-                          item.completed 
-                            ? isHackerTheme ? 'text-green-600 line-through font-mono' : 'text-gray-400 line-through'
-                            : isHackerTheme ? 'text-green-300 font-mono' : 'text-gray-300'
-                        }`}
+                        className={`flex-1 text-sm cursor-pointer ${item.completed
+                          ? isHackerTheme ? 'text-green-600 line-through font-mono' : 'text-gray-400 line-through'
+                          : isHackerTheme ? 'text-green-300 font-mono' : 'text-gray-300'
+                          }`}
                         onClick={(e) => e.stopPropagation()}
                       >
                         {item.text.split('\n')[0].replace(/\*\*/g, '')}

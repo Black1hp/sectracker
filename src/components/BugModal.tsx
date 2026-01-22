@@ -115,7 +115,7 @@ export function BugModal({ isOpen, onClose, platforms, selectedPlatform, selecte
             <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
               Save Bug Report
             </Button>
-            <Button variant="outline" onClick={onClose} className="border-gray-600 text-gray-300 hover:bg-gray-700">
+            <Button variant="outline" onClick={onClose} className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600">
               Cancel
             </Button>
           </div>

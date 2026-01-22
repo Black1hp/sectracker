@@ -22,3 +22,37 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment variables (IMPORTANT: never commit secrets!)
+.env
+.env.local
+.env.*.local
+
+# Database exports and sensitive data
+*.csv
+*.sql.backup
+
+# OS generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Build artifacts
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Bun lockfile (using npm for consistency)
+bun.lockb
+
+# Supabase local config
+supabase/.branches
+supabase/.temp
+
+# Zip and archive files
+*.zip
+*.tar.gz
+
+# IDE specific
+*.code-workspace

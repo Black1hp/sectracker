@@ -9,7 +9,7 @@ import { Database } from '@/integrations/supabase/types';
 interface Program {
   id: string;
   platform_id: string;
-  name: string;
+  target_name: string;
   company: string;
   scope: string;
   max_bounty: number;
@@ -70,7 +70,7 @@ export function BugReportCard({ bug, onViewBug, onBugAction }: BugReportCardProp
     <div className="flex items-center justify-between p-4 bg-gray-900 rounded border border-gray-700">
       <div className="flex-1">
         <h5 className="text-white font-medium">{bug.title}</h5>
-        <p className="text-sm text-gray-400">{bug.program.name} • {bug.program.company}</p>
+        <p className="text-sm text-gray-400">{bug.program.target_name} • {bug.program.company}</p>
         <p className="text-xs text-gray-500 mt-1">{bug.submission_date}</p>
         {bug.vulnerability_type && (
           <Badge variant="outline" className="border-gray-600 text-gray-400 text-xs mt-1">
@@ -91,36 +91,36 @@ export function BugReportCard({ bug, onViewBug, onBugAction }: BugReportCardProp
             <span className="text-sm font-medium">${bug.bounty_amount}</span>
           </div>
         )}
-        
+
         <div className="flex items-center space-x-1">
           <Button
             size="sm"
             variant="outline"
             onClick={() => onViewBug(bug)}
-            className="border-gray-600 text-gray-300 hover:bg-gray-700"
+            className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
           >
             <Eye className="h-4 w-4" />
           </Button>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 size="sm"
                 variant="outline"
-                className="border-gray-600 text-gray-300 hover:bg-gray-700"
+                className="border-gray-500 text-white bg-gray-700 hover:bg-gray-600"
               >
                 <Edit className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="bg-gray-700 border-gray-600">
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => onBugAction(bug, 'edit')}
                 className="text-gray-300 hover:bg-gray-600"
               >
                 <Edit className="h-4 w-4 mr-2" />
                 Edit
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => onBugAction(bug, bug.status === 'Resolved' ? 'unarchive' : 'archive')}
                 className="text-gray-300 hover:bg-gray-600"
               >
@@ -136,7 +136,7 @@ export function BugReportCard({ bug, onViewBug, onBugAction }: BugReportCardProp
                   </>
                 )}
               </DropdownMenuItem>
-              <DropdownMenuItem 
+              <DropdownMenuItem
                 onClick={() => onBugAction(bug, 'delete')}
                 className="text-red-400 hover:bg-gray-600"
               >

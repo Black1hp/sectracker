@@ -266,7 +266,7 @@ export function ConfigurationModal({ isOpen, onClose }: ConfigurationModalProps)
               type="button"
               variant="outline"
               onClick={handleTestConnection}
-              className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+              className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-500 text-white bg-gray-700 hover:bg-gray-600"}
             >
               Test Connection
             </Button>
@@ -274,7 +274,7 @@ export function ConfigurationModal({ isOpen, onClose }: ConfigurationModalProps)
               type="button"
               variant="outline"
               onClick={onClose}
-              className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+              className={isHackerTheme ? "border-green-600 text-green-400 hover:bg-green-950/50 font-mono" : "border-gray-500 text-white bg-gray-700 hover:bg-gray-600"}
             >
               Cancel
             </Button>

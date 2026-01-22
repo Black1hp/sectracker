@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Shield, Bug, CheckSquare, Lightbulb, BookOpen, BarChart3, LogOut, FileText, Link, User, Rss, Target } from 'lucide-react';
+import { Shield, Bug, CheckSquare, BookOpen, BarChart3, LogOut, User, Rss, Target, TrendingUp, Crosshair, DollarSign } from 'lucide-react';
 import { Sidebar as SidebarUI, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarHeader, SidebarFooter } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,18 +10,37 @@ interface SidebarProps {
   setActiveView: (view: string) => void;
 }
 
-const menuItems = [
-  { id: 'dashboard', title: 'Dashboard', icon: BarChart3, color: 'text-cyan-400' },
-  { id: 'platforms', title: 'Platforms & Bugs', icon: Bug, color: 'text-red-400' },
-  { id: 'my-bugs', title: 'My Bug Reports', icon: Bug, color: 'text-red-400' },
-  { id: 'bounty-targets', title: 'Bounty Targets', icon: Target, color: 'text-green-400' },
-  { id: 'checklists', title: 'Security Checklists', icon: CheckSquare, color: 'text-green-400' },
-  { id: 'tips', title: 'Tips & Tricks', icon: Lightbulb, color: 'text-yellow-400' },
-  { id: 'reading', title: 'Reading List', icon: BookOpen, color: 'text-blue-400' },
-  { id: 'rss', title: 'News Feed', icon: Rss, color: 'text-orange-400' },
-  { id: 'notes', title: 'Personal Notes', icon: FileText, color: 'text-purple-400' },
-  { id: 'links', title: 'Useful Links', icon: Link, color: 'text-orange-400' },
-  { id: 'profile', title: 'Profile', icon: User, color: 'text-pink-400' },
+// Grouped menu structure
+const menuGroups = [
+  {
+    label: 'Hunting',
+    items: [
+      { id: 'dashboard', title: 'Dashboard', icon: BarChart3, color: 'text-cyan-400' },
+      { id: 'my-targets', title: 'My Targets', icon: Crosshair, color: 'text-cyan-400' },
+      { id: 'bug-reports', title: 'Bug Reports', icon: Bug, color: 'text-red-400' },
+      { id: 'analytics', title: 'Analytics', icon: TrendingUp, color: 'text-emerald-400' },
+    ]
+  },
+  {
+    label: 'Methodology',
+    items: [
+      { id: 'checklists', title: 'Checklists', icon: CheckSquare, color: 'text-green-400' },
+      { id: 'knowledge-base', title: 'Knowledge Base', icon: BookOpen, color: 'text-purple-400' },
+    ]
+  },
+  {
+    label: 'Resources',
+    items: [
+      { id: 'news-feed', title: 'News Feed', icon: Rss, color: 'text-orange-400' },
+      { id: 'earnings-goals', title: 'Earnings Goals', icon: DollarSign, color: 'text-green-400' },
+    ]
+  },
+  {
+    label: 'Account',
+    items: [
+      { id: 'profile', title: 'Profile', icon: User, color: 'text-pink-400' },
+    ]
+  }
 ];
 
 export function Sidebar({ activeView, setActiveView }: SidebarProps) {
@@ -41,36 +60,37 @@ export function Sidebar({ activeView, setActiveView }: SidebarProps) {
         </div>
       </SidebarHeader>
       <SidebarContent style={{ backgroundColor: 'rgb(17, 24, 39)' }}>
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-gray-400 text-xs uppercase tracking-wider">
-            Navigation
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    onClick={() => setActiveView(item.id)}
-                    className={`w-full justify-start transition-colors ${
-                      activeView === item.id 
-                        ? 'bg-cyan-600 text-white hover:bg-cyan-700' 
+        {menuGroups.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel className="text-gray-500 text-xs uppercase tracking-wider px-3 py-2">
+              {group.label}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => (
+                  <SidebarMenuItem key={item.id}>
+                    <SidebarMenuButton
+                      onClick={() => setActiveView(item.id)}
+                      className={`w-full justify-start transition-colors ${activeView === item.id
+                        ? 'bg-cyan-600 text-white hover:bg-cyan-700'
                         : 'text-gray-300 hover:bg-gray-800 hover:text-white'
-                    }`}
-                  >
-                    <item.icon className={`h-5 w-5 ${activeView === item.id ? 'text-white' : item.color}`} />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+                        }`}
+                    >
+                      <item.icon className={`h-5 w-5 ${activeView === item.id ? 'text-white' : item.color}`} />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter className="p-4 border-t border-gray-700" style={{ backgroundColor: 'rgb(17, 24, 39)' }}>
-        <Button 
+        <Button
           onClick={handleLogout}
-          variant="outline" 
-          className="w-full border-gray-600 text-gray-300 hover:bg-gray-800"
+          variant="outline"
+          className="w-full border-red-500/50 text-red-400 bg-gray-800/50 hover:bg-red-900/30 hover:text-red-300 hover:border-red-400"
         >
           <LogOut className="h-4 w-4 mr-2" />
           Logout
